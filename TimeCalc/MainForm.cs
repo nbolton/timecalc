@@ -34,11 +34,18 @@ namespace TimeCalc
         {
             if (unknownFormat.ToLower().EndsWith("pm")) 
             {
-                string[] split = unknownFormat.Split(':');
-                string minutes = split[1].Substring(
-                    0, split[1].Length - 2);
-                string tweleveHourString = split[0];
-                int twentyFourHour = int.Parse(tweleveHourString) + 12;
+                string stripped = unknownFormat.Substring(
+                    0, unknownFormat.Length - 2);
+
+                string[] split = stripped.Split(':');
+                string minutes = "00", hours = split[0];
+
+                if (split.Length > 1)
+                {
+                    minutes = split[1];
+                }
+
+                int twentyFourHour = int.Parse(hours) + 12;
                 return string.Format(
                     "{0}:{1}",
                     twentyFourHour.ToString().PadLeft(2, '0'),
@@ -66,9 +73,20 @@ namespace TimeCalc
             string[] endSplit = endTextBox.Text.Split(':');
 
             int startHours = int.Parse(startSplit[0]);
-            int startMins = int.Parse(startSplit[1]);
             int endHours = int.Parse(endSplit[0]);
-            int endMins = int.Parse(endSplit[1]);
+
+
+            int startMins = 0;
+            if (startSplit.Length > 1)
+            {
+                startMins = int.Parse(startSplit[1]);
+            }
+
+            int endMins = 0;
+            if (endSplit.Length > 1)
+            {
+                endMins = int.Parse(endSplit[1]);
+            }
 
             int resultHours;
             if (startHours > endHours) // clock elapsed?
@@ -77,7 +95,7 @@ namespace TimeCalc
             }
             else
             {
-                resultHours = startHours - endHours;
+                resultHours = endHours - startHours;
             }
 
             // merge mins and hours for accurate minute translation
