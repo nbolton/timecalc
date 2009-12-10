@@ -59,6 +59,7 @@
             this.startTextBox.Name = "startTextBox";
             this.startTextBox.Size = new System.Drawing.Size(67, 20);
             this.startTextBox.TabIndex = 1;
+            this.startTextBox.Enter += new System.EventHandler(this.startTextBox_Enter);
             // 
             // endTextBox
             // 
@@ -66,6 +67,7 @@
             this.endTextBox.Name = "endTextBox";
             this.endTextBox.Size = new System.Drawing.Size(67, 20);
             this.endTextBox.TabIndex = 3;
+            this.endTextBox.Enter += new System.EventHandler(this.endTextBox_Enter);
             // 
             // label2
             // 
@@ -90,6 +92,7 @@
             // 
             this.hoursTextBox.Location = new System.Drawing.Point(78, 22);
             this.hoursTextBox.Name = "hoursTextBox";
+            this.hoursTextBox.ReadOnly = true;
             this.hoursTextBox.Size = new System.Drawing.Size(67, 20);
             this.hoursTextBox.TabIndex = 5;
             // 
@@ -147,6 +150,7 @@
             // 
             this.decTextBox.Location = new System.Drawing.Point(78, 48);
             this.decTextBox.Name = "decTextBox";
+            this.decTextBox.ReadOnly = true;
             this.decTextBox.Size = new System.Drawing.Size(67, 20);
             this.decTextBox.TabIndex = 7;
             // 

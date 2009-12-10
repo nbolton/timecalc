@@ -32,49 +32,80 @@ namespace TimeCalc
 
         private string toTwentyFourHour(string unknownFormat)
         {
-            if (unknownFormat.ToLower().EndsWith("pm")) 
+            if (unknownFormat.ToLower().EndsWith("p") || unknownFormat.ToLower().EndsWith("pm")) 
             {
-                string stripped = unknownFormat.Substring(
-                    0, unknownFormat.Length - 2);
+                string stripped = unknownFormat;
+
+                if (unknownFormat.ToLower().EndsWith("p"))
+                {
+                    stripped = unknownFormat.Substring(
+                        0, unknownFormat.Length - 1); // remove 1
+                }
+                else if (unknownFormat.ToLower().EndsWith("pm"))
+                {
+                    stripped = unknownFormat.Substring(
+                        0, unknownFormat.Length - 2); // remove 2
+                }
 
                 string[] split = stripped.Split(':');
-                string minutes = "00", hours = split[0];
+                int hours = int.Parse(split[0]);
+                int minutes = 0;
 
                 if (split.Length > 1)
                 {
-                    minutes = split[1];
+                    minutes = int.Parse(split[1]);
                 }
 
-                int twentyFourHour = int.Parse(hours) + 12;
-                return string.Format(
-                    "{0}:{1}",
-                    twentyFourHour.ToString().PadLeft(2, '0'),
-                    minutes.PadLeft(2, '0'));
-            }
-            else if (unknownFormat.ToLower().EndsWith("am")) 
-            {
-                // remove 'am' so it's now 24 hr
-                return unknownFormat.Substring(
-                    0, unknownFormat.Length - 2);
+                // people confuse 12am with 12pm; most people think like this:
+                //   12pm = 12:00
+                //   12am = 00:00
+                int twentyFourHour = (hours == 12) ? 12 : hours + 12;
+
+                return string.Format("{0}:{1}", twentyFourHour.ToString(), minutes.ToString());
             }
             else
             {
-                // guess 24 hour
-                return unknownFormat;
+                string stripped = unknownFormat;
+
+                if (unknownFormat.ToLower().EndsWith("a"))
+                {
+                    stripped = unknownFormat.Substring(
+                        0, unknownFormat.Length - 1); // remove 1
+                }
+                else if (unknownFormat.ToLower().EndsWith("am"))
+                {
+                    stripped = unknownFormat.Substring(
+                        0, unknownFormat.Length - 2); // remove 2
+                }
+
+                string[] split = stripped.Split(':');
+                int hours = int.Parse(split[0]);
+                int minutes = 0;
+
+                if (split.Length > 1)
+                {
+                    minutes = int.Parse(split[1]);
+                }
+
+                // people confuse 12am with 12pm; most people think like this:
+                //   12pm = 12:00
+                //   12am = 00:00
+                int twentyFourHour = (hours == 12) ? 0 : hours;
+
+                return string.Format("{0}:{1}", twentyFourHour.ToString(), minutes.ToString());
             }
         }
 
         private void calculate()
         {
-            startTextBox.Text = toTwentyFourHour(startTextBox.Text);
-            endTextBox.Text = toTwentyFourHour(endTextBox.Text);
+            string start = toTwentyFourHour(startTextBox.Text);
+            string end = toTwentyFourHour(endTextBox.Text);
 
-            string[] startSplit = startTextBox.Text.Split(':');
-            string[] endSplit = endTextBox.Text.Split(':');
+            string[] startSplit = start.Split(':');
+            string[] endSplit = end.Split(':');
 
             int startHours = int.Parse(startSplit[0]);
             int endHours = int.Parse(endSplit[0]);
-
 
             int startMins = 0;
             if (startSplit.Length > 1)
@@ -99,7 +130,7 @@ namespace TimeCalc
             }
 
             // merge mins and hours for accurate minute translation
-            int resultMins = (resultHours * 60) + (startMins - endMins);
+            int resultMins = (resultHours * 60) + (endMins - startMins);
 
             // convert mins to hours, and have a remainder of mins
             resultHours = 0;
@@ -111,15 +142,26 @@ namespace TimeCalc
             hoursTextBox.Text = string.Format(
                 "{0}:{1}",
                 resultHours.ToString(),
-                resultMins.ToString());
+                resultMins.ToString().PadLeft(2, '0'));
 
             // also yield a weird decimal version of mins
             int resultMinsDec = (int)(((float)resultMins / 60) * 10);
 
-            decTextBox.Text = string.Format(
-                "{0}.{1}",
-                resultHours.ToString(),
-                resultMinsDec);
+            decTextBox.Text = resultHours.ToString();
+            if (resultMinsDec != 0)
+            {
+                decTextBox.Text += "." + resultMinsDec;
+            }
+        }
+
+        private void startTextBox_Enter(object sender, EventArgs e)
+        {
+            startTextBox.SelectAll();
+        }
+
+        private void endTextBox_Enter(object sender, EventArgs e)
+        {
+            endTextBox.SelectAll();
         }
     }
 }
