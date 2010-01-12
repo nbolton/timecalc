@@ -56,9 +56,10 @@ namespace TimeCalc
                     minutes = int.Parse(split[1]);
                 }
 
-                // people confuse 12am with 12pm; most people think like this:
-                //   12pm = 12:00
+                // there's some confusion about the number 12; most people think like this:
+                //   12pm = 12:00 -- only possible case
                 //   12am = 00:00
+                //   12 = 12:00
                 int twentyFourHour = (hours == 12) ? 12 : hours + 12;
 
                 return string.Format("{0}:{1}", twentyFourHour.ToString(), minutes.ToString());
@@ -87,12 +88,19 @@ namespace TimeCalc
                     minutes = int.Parse(split[1]);
                 }
 
-                // people confuse 12am with 12pm; most people think like this:
-                //   12pm = 12:00
-                //   12am = 00:00
-                int twentyFourHour = (hours == 12) ? 0 : hours;
+                bool hasAmAffix = unknownFormat.ToLower().EndsWith("a") 
+                    || unknownFormat.ToLower().EndsWith("am");
 
-                return string.Format("{0}:{1}", twentyFourHour.ToString(), minutes.ToString());
+                // there's some confusion about the number 12; most people think like this:
+                //   12pm = 12:00
+                //   12am = 00:00 -- possible case
+                //   12 = 12:00 -- possible case
+                if ((hours == 12) && hasAmAffix)
+                {
+                    hours = 0;
+                }
+
+                return string.Format("{0}:{1}", hours.ToString(), minutes.ToString());
             }
         }
 
